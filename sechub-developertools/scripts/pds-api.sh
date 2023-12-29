@@ -65,64 +65,64 @@ function check_alive {
 }
 
 function mark_job_ready_to_start {
-  local jobUUID=$1
+  local jobUUID="$1"
 
-  curl_with_pds_auth -i -X PUT --header "Accept: application/json" --header "Content-Type: application/json" "$PDS_SERVER/api/job/$jobUUID/mark-ready-to-start" | $RESULT_FILTER | $JSON_FORMATTER
+  curl_with_pds_auth -i -X PUT --header "Accept: application/json" --header "Content-Type: application/json" "$PDS_SERVER/api/job/$jobUUID/mark-ready-to-start" | "$RESULT_FILTER" | "$JSON_FORMATTER"
 }
 
 function job_status {
-  local jobUUID=$1
+  local jobUUID="$1"
 
-  curl_with_pds_auth -i -X GET --header "Accept: application/json" "$PDS_SERVER/api/job/$jobUUID/status" | $RESULT_FILTER | $JSON_FORMATTER
+  curl_with_pds_auth -i -X GET --header "Accept: application/json" "$PDS_SERVER/api/job/$jobUUID/status" | "$RESULT_FILTER" | "$JSON_FORMATTER"
 }
 
 function job_result {
-  local jobUUID=$1
+  local jobUUID="$1"
 
   curl_with_pds_auth -X GET --header "Accept: application/json" "$PDS_SERVER/api/job/$jobUUID/result"
   echo ""
 }
 
 function job_messages {
-  local jobUUID=$1
+  local jobUUID="$1"
 
   curl_with_pds_auth -X GET --header "Accept: application/json" "$PDS_SERVER/api/job/$jobUUID/messages"
   echo ""
 }
 
 function job_stream_output {
-  local jobUUID=$1
+  local jobUUID="$1"
 
   curl_with_pds_auth -X GET --header "Accept: text/plain" "$PDS_SERVER/api/job/$jobUUID/stream/output"
   echo ""
 }
 
 function job_stream_error {
-  local jobUUID=$1
+  local jobUUID="$1"
 
   curl_with_pds_auth -X GET --header "Accept: text/plain" "$PDS_SERVER/api/job/$jobUUID/stream/error"
   echo ""
 }
 
 function monitoring_status {
-  curl_with_pds_auth -X GET --header "Accept: application/json" "$PDS_SERVER/api/admin/monitoring/status" | $RESULT_FILTER | $JSON_FORMATTER
+  curl_with_pds_auth -X GET --header "Accept: application/json" "$PDS_SERVER/api/admin/monitoring/status" | "$RESULT_FILTER" | "$JSON_FORMATTER"
 }
 
 function create_job {
-  local productId=$1
-  local sechubJobUUID=$2
+  local productId="$1"
+  local sechubJobUUID="$2"
 
   curl_with_pds_auth -i -X POST --header "Content-Type: application/json" \
     --data "$(generate_pds_job_data "$sechubJobUUID" "$productId")" \
-    "$PDS_SERVER/api/job/create" | $RESULT_FILTER | $JSON_FORMATTER
+    "$PDS_SERVER/api/job/create" | "$RESULT_FILTER" | "$JSON_FORMATTER"
 }
 
 function create_job_from_json {
-  local json_file=$1
+  local json_file="$1"
 
   curl_with_pds_auth -i -X POST --header "Content-Type: application/json" \
     --data "@$json_file" \
-    "$PDS_SERVER/api/job/create" | $RESULT_FILTER | $JSON_FORMATTER
+    "$PDS_SERVER/api/job/create" | "$RESULT_FILTER" | "$JSON_FORMATTER"
 }
 
 
@@ -140,8 +140,8 @@ EOF
 }
 
 function upload {
-  local pdsJobUUID=$1
-  local file_to_upload=$2
+  local pdsJobUUID="$1"
+  local file_to_upload="$2"
   local upload_file_name="sourcecode.zip"
 
   if [[ ! -f "$file_to_upload" ]] ; then
@@ -149,21 +149,21 @@ function upload {
     exit 1
   fi
 
-  local file_to_upload_lowercased=$( echo "$file_to_upload" | tr '[:upper:]' '[:lower:]' )
+  local file_to_upload_lowercased="$( echo "$file_to_upload" | tr '[:upper:]' '[:lower:]' )"
   if [[ "$file_to_upload_lowercased" == *.tar ]]
   then
     upload_file_name="binaries.tar"
   fi
 
-  local checkSum=$(sha256sum "$file_to_upload" | cut --delimiter=' ' --fields=1)
-  local fileSize=$(ls -l "$file_to_upload" | cut --delimiter=' ' --fields 5)
+  local checkSum="$(sha256sum "$file_to_upload" | cut --delimiter=' ' --fields=1)"
+  local fileSize="$(ls -l "$file_to_upload" | cut --delimiter=' ' --fields 5)"
 
   curl_with_pds_auth -i -X POST \
     --header "Content-Type: multipart/form-data" \
     --header "x-file-size: $fileSize" \
     --form "file=@$file_to_upload" \
     --form "checkSum=$checkSum" \
-    "$PDS_SERVER/api/job/${pdsJobUUID}/upload/$upload_file_name" | $RESULT_FILTER
+    "$PDS_SERVER/api/job/$pdsJobUUID/upload/$upload_file_name" | "$RESULT_FILTER"
 
   if [[ "$?" == "0" ]] ; then
     echo "Uploaded file: \"$file_to_upload\""
@@ -250,43 +250,43 @@ case "$action" in
   create_job)
     PDS_PRODUCT_ID="$1" ; check_parameter PDS_PRODUCT_ID
     SECHUB_JOB_UUID="$2" ; check_parameter SECHUB_JOB_UUID
-    [ $FAILED == 0 ] && create_job "$PDS_PRODUCT_ID" "$SECHUB_JOB_UUID" 
+    [ "$FAILED" == 0 ] && create_job "$PDS_PRODUCT_ID" "$SECHUB_JOB_UUID" 
     ;;
   create_job_from_json)
     JSON_FILE="$1" ; check_parameter JSON_FILE
-    [ $FAILED == 0 ] && create_job_from_json "$JSON_FILE" 
+    [ "$FAILED" == 0 ] && create_job_from_json "$JSON_FILE" 
     ;;
   upload)
     PDS_JOB_UUID="$1" ; check_parameter PDS_JOB_UUID
     FILE_TO_UPLOAD="$2" ; check_parameter FILE_TO_UPLOAD
-    [ $FAILED == 0 ] && upload "$PDS_JOB_UUID" "$FILE_TO_UPLOAD" 
+    [ "$FAILED" == 0 ] && upload "$PDS_JOB_UUID" "$FILE_TO_UPLOAD" 
     ;;
   mark_job_ready_to_start)
     JOB_UUID="$1"   ; check_parameter JOB_UUID
-    [ $FAILED == 0 ] && mark_job_ready_to_start "$JOB_UUID"
+    [ "$FAILED" == 0 ] && mark_job_ready_to_start "$JOB_UUID"
     ;;
   job_status)
     JOB_UUID="$1"   ; check_parameter JOB_UUID
-    [ $FAILED == 0 ] && job_status "$JOB_UUID"
+    [ "$FAILED" == 0 ] && job_status "$JOB_UUID"
     ;;
   job_result)
     JOB_UUID="$1"   ; check_parameter JOB_UUID
-    [ $FAILED == 0 ] && job_result "$JOB_UUID"
+    [ "$FAILED" == 0 ] && job_result "$JOB_UUID"
     ;;
   job_stream_output)
     JOB_UUID="$1"   ; check_parameter JOB_UUID
-    [ $FAILED == 0 ] && job_stream_output "$JOB_UUID"
+    [ "$FAILED" == 0 ] && job_stream_output "$JOB_UUID"
     ;;
   job_stream_error)
     JOB_UUID="$1"   ; check_parameter JOB_UUID
-    [ $FAILED == 0 ] && job_stream_error "$JOB_UUID"
+    [ "$FAILED" == 0 ] && job_stream_error "$JOB_UUID"
     ;;
   job_messages)
     JOB_UUID="$1"   ; check_parameter JOB_UUID
-    [ $FAILED == 0 ] && job_messages "$JOB_UUID"
+    [ "$FAILED" == 0 ] && job_messages "$JOB_UUID"
     ;;
   monitoring_status)
-    [ $FAILED == 0 ] && monitoring_status
+    [ "$FAILED" == 0 ] && monitoring_status
     ;;
   "")
     usage
@@ -302,7 +302,7 @@ esac
 [ "$JSON_FORMATTER" == "$NOFORMAT_PIPE" ] && echo ""
 
 # failed?
-if [ $FAILED != 0 ] ; then
+if [ "$FAILED" != 0 ] ; then
   usage
   exit 1
 fi
