@@ -6,8 +6,6 @@ on: workflow_dispatch
 jobs:
   build-scan:
     runs-on: ubuntu-latest
-    # Let's set the scan action folder as the working directory for all "run" steps:
-    working-directory: ./github-actions/scan
     
     steps:
       - name: Checkout
@@ -18,13 +16,20 @@ jobs:
         # which should be the default environment for the github actions runtime as well
         uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65
     
-      - name: Clean install
+      - name: Clean install (shared)
         run: npm ci 
+        working-directory: ./github-actions/shared
+
+      - name: Clean install (scan)
+        run: npm ci 
+        working-directory: ./github-actions/scan
         
       - name: Build
         run: npm run build --if-present
+        working-directory: ./github-actions/scan
         
       - name: Run tests
         run: npm test
+        working-directory: ./github-actions/scan
     
       
