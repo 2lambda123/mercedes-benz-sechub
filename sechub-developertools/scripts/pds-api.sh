@@ -12,7 +12,7 @@ PDS_API_VERSION="1.0"
 function usage {
   cat - <<EOF
 ---
-Usage: `basename $0` [-p] [-s <pds server url> [-u <pds user>] [-a <pds api token>] action [<action's parameters>]
+Usage: $(basename "$0") [-p] [-s <pds server url> [-u <pds user>] [-a <pds api token>] action [<action's parameters>]
 
 Shell front end for the Product Delegation Server (PDS)
 Output will be beautified/colorized by piping json output through jq command (https://github.com/stedolan/jq)
@@ -43,13 +43,13 @@ export PDS_SERVER="https://localhost:8444"
 export PDS_USERID="admin"
 export PDS_APITOKEN="pds-apitoken"
 
-./`basename $0` check_alive
+./$(basename "$0") check_alive
 EOF
 }
 
 function curl_with_pds_auth {
   # Don't reveal secrets in the curl process
-  printf "user = $PDS_USERID:$PDS_APITOKEN\n" | curl --config - $CURL_PARAMS "$@"
+  printf "user = $PDS_USERID:$PDS_APITOKEN\n" | curl --config - "$CURL_PARAMS" "$@"
 }
 
 function check_parameter {
@@ -61,7 +61,7 @@ function check_parameter {
 }
 
 function check_alive {
-  curl $CURL_PARAMS --head "$PDS_SERVER/api/anonymous/check/alive"
+  curl "$CURL_PARAMS" --head "$PDS_SERVER/api/anonymous/check/alive"
 }
 
 function mark_job_ready_to_start {
@@ -113,7 +113,7 @@ function create_job {
   local sechubJobUUID=$2
 
   curl_with_pds_auth -i -X POST --header "Content-Type: application/json" \
-    --data "$(generate_pds_job_data $sechubJobUUID $productId)" \
+    --data "$(generate_pds_job_data "$sechubJobUUID" "$productId")" \
     "$PDS_SERVER/api/job/create" | $RESULT_FILTER | $JSON_FORMATTER
 }
 
