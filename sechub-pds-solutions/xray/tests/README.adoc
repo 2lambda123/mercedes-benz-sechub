@@ -17,4 +17,3 @@ java -jar sechub-pds-tools-cli-0.0.0.jar systemtest --file systemtest_local.json
 
 System test for Xray are written using the XRAY_MOCK executing mock.sh
 Please Note: the mock.sh script can return a SPDX or a CycloneDX report of the dvwa
-
