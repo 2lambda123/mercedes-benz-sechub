@@ -67,10 +67,7 @@
       "prepare": [
         {
           "script": {
-            "arguments": [
-              "${runtime.currentTestFolder}",
-              "test_files"
-            ],
+            "arguments": ["${runtime.currentTestFolder}", "test_files"],
             "path": "./compress.sh"
           }
         }
