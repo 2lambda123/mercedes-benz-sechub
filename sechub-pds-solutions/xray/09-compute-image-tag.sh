@@ -12,7 +12,8 @@ else
   VERSION_TAG="`date +%Y-%m-%d`"
 fi
 
-# Use date of build, because there are multiple tools contained
-VERSION_TAG+="_`date +%Y-%m-%d`"
+if [[ -n "$XRAY_WRAPPER_VERSION" ]] ; then
+    VERSION_TAG+="_$XRAY_WRAPPER_VERSION"
+fi
 
 echo $VERSION_TAG
