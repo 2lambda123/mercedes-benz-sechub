@@ -27,7 +27,7 @@ case "$BANDIT_SEVERITY" in
         severity="-l"
 esac
 
-cd "$PDS_JOB_EXTRACTED_SOURCES_FOLDER/"
+cd "$PDS_JOB_EXTRACTED_SOURCES_FOLDER/" || exit
 bandit --format sarif --ignore-nosec $severity $confidence --output "$PDS_JOB_RESULT_FILE" --recursive "."
 
 exit 0
