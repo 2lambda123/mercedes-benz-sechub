@@ -29,22 +29,22 @@ plugins {
     // asciidoc
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
     id 'org.asciidoctor.jvm.pdf' version '3.3.2'
-    
+
     // open api
     id 'org.openapi.generator' version '6.6.0'
-    
+
     // spring
     id 'org.springframework.boot' version '2.7.12' apply false
-    
+
     // spotless code formatter
     // (see https://github.com/diffplug/spotless)
     id 'com.diffplug.spotless' version '6.18.0'
-    
-    // versions plugin for checking new available library versions etc. 
+
+    // versions plugin for checking new available library versions etc.
     // (see https://github.com/ben-manes/gradle-versions-plugin)
     id 'com.github.ben-manes.versions' version '0.46.0'
-    
-    // Details about every gradle plugin can be found at 
+
+    // Details about every gradle plugin can be found at
     // https://plugins.gradle.org/plugin/${pluginId}
 }
 
@@ -88,7 +88,7 @@ task internalCleanRootBuildFolder(type: Delete){
         def rootBuildFolder = file("${project.projectDir}/build")
         if (! rootBuildFolder.exists()){
             rootBuildFolder.mkdirs();
-        } 
+        }
         delete rootBuildFolder.listFiles() // so we do NOT clear buildSrc/build here!
     }
 
@@ -115,7 +115,7 @@ allprojects {
 
     /* every project has got this additional task */
     task prepareGitPush(dependsOn: spotlessApply){
-    
+
     }
 }
 
