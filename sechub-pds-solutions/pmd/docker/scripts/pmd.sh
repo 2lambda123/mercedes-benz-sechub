@@ -11,7 +11,7 @@ case "$PMD_RULESET" in
     ;;
     "ALL")
         ruleset="ruleset-all.xml"
-esac
+;; esac
 
 run.sh pmd --rulesets "$SCRIPT_FOLDER/$ruleset" --format sarif --dir "$PDS_JOB_EXTRACTED_SOURCES_FOLDER" --report-file "$PDS_JOB_RESULT_FILE"
 

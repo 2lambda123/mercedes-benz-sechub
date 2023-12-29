@@ -12,7 +12,7 @@ case "$BANDIT_CONFIDENCE" in
     ;;
     "LOW")
         confidence="-i"
-esac
+;; esac
 
 severity=""
 
@@ -25,9 +25,9 @@ case "$BANDIT_SEVERITY" in
     ;;
     "LOW")
         severity="-l"
-esac
+;; esac
 
 cd "$PDS_JOB_EXTRACTED_SOURCES_FOLDER/" || exit
-bandit --format sarif --ignore-nosec $severity $confidence --output "$PDS_JOB_RESULT_FILE" --recursive "."
+bandit --format sarif --ignore-nosec "$severity" "$confidence" --output "$PDS_JOB_RESULT_FILE" --recursive "."
 
 exit 0
