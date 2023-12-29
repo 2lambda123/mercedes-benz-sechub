@@ -183,7 +183,7 @@ public class AsPDSUser {
     }
 
     String internalFetchOutputStreamTextWithoutAutoDump(UUID jobUUID) {
-        String url = getPDSUrlBuilder().buildAdminFetchesJobOutputStreamUrl(jobUUID);
+        String url = getPDSUrlBuilder().buildPdsUserFetchesJobOutputStreamUrl(jobUUID);
         String result = getRestHelper().getStringFromURL(url);
         return result;
     }
@@ -193,7 +193,7 @@ public class AsPDSUser {
     }
 
     String internalFetchErrorStreamTextWithoutAutoDump(UUID jobUUID) {
-        String url = getPDSUrlBuilder().buildAdminFetchesJobErrorStreamUrl(jobUUID);
+        String url = getPDSUrlBuilder().buildPDSUserFetchesJobErrorStreamUrl(jobUUID);
         String result = getRestHelper().getStringFromURL(url);
         return result;
     }

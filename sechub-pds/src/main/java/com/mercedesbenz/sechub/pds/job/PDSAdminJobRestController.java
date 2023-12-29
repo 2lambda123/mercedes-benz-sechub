@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mercedesbenz.sechub.pds.PDSAPIConstants;
 import com.mercedesbenz.sechub.pds.security.PDSRoleConstants;
 import com.mercedesbenz.sechub.pds.usecase.PDSStep;
-import com.mercedesbenz.sechub.pds.usecase.UseCaseAdminFetchesJobErrorStream;
 import com.mercedesbenz.sechub.pds.usecase.UseCaseAdminFetchesJobMetaData;
-import com.mercedesbenz.sechub.pds.usecase.UseCaseAdminFetchesJobOutputStream;
 import com.mercedesbenz.sechub.pds.usecase.UseCaseAdminFetchesJobResultOrFailureText;
 
 /**
@@ -49,28 +47,6 @@ public class PDSAdminJobRestController {
             ) {
         /* @formatter:on */
         return jobResultService.getJobResultOrFailureText(jobUUID);
-    }
-
-    /* @formatter:off */
-    @Validated
-    @RequestMapping(path = "job/{jobUUID}/stream/output", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    @UseCaseAdminFetchesJobOutputStream(@PDSStep(name="rest call",description = "an admin fetches output stream text.", number=1))
-    public String getJobOutputStreamContentAsText(
-            @PathVariable("jobUUID") UUID jobUUID
-            ) {
-        /* @formatter:on */
-        return jobStreamContentService.getJobOutputStreamContentAsText(jobUUID);
-    }
-
-    /* @formatter:off */
-    @Validated
-    @RequestMapping(path = "job/{jobUUID}/stream/error", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
-    @UseCaseAdminFetchesJobErrorStream(@PDSStep(name="rest call",description = "an admin fetches error stream text.", number=1))
-    public String getJobErrorStreamContentAsText(
-            @PathVariable("jobUUID") UUID jobUUID
-            ) {
-        /* @formatter:on */
-        return jobStreamContentService.getJobErrorStreamContentAsText(jobUUID);
     }
 
     /* @formatter:off */

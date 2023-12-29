@@ -234,11 +234,11 @@ public class DeveloperAdministration {
         }
 
         public String getJobOutputStream(UUID jobUUID) {
-            return restHelper.getStringFromURL(pdsUrlBuilder.buildAdminFetchesJobOutputStreamUrl(jobUUID));
+            return restHelper.getStringFromURL(pdsUrlBuilder.buildPdsUserFetchesJobOutputStreamUrl(jobUUID));
         }
 
         public String getJobErrorStream(UUID jobUUID) {
-            return restHelper.getStringFromURL(pdsUrlBuilder.buildAdminFetchesJobErrorStreamUrl(jobUUID));
+            return restHelper.getStringFromURL(pdsUrlBuilder.buildPDSUserFetchesJobErrorStreamUrl(jobUUID));
         }
 
         public String getJobMessages(UUID jobUUID) {

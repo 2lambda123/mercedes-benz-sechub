@@ -93,12 +93,12 @@ public class PDSTestURLBuilder extends AbstractTestURLBuilder {
         return buildUrl(API_PDS_INTEGRATIONTEST, "last/started/job/uuid");
     }
 
-    public String buildAdminFetchesJobOutputStreamUrl(UUID jobUUID) {
-        return buildUrl(API_ADMIN_JOB, jobUUID, "stream", "output");
+    public String buildPdsUserFetchesJobOutputStreamUrl(UUID jobUUID) {
+        return buildUrl(API_PDS_JOB, jobUUID, "stream", "output");
     }
 
-    public String buildAdminFetchesJobErrorStreamUrl(UUID jobUUID) {
-        return buildUrl(API_ADMIN_JOB, jobUUID, "stream", "error");
+    public String buildPDSUserFetchesJobErrorStreamUrl(UUID jobUUID) {
+        return buildUrl(API_PDS_JOB, jobUUID, "stream", "error");
     }
 
     public String buildAdminFetchesJobMetaData(UUID pdsJobUUID) {

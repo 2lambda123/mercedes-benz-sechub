@@ -117,7 +117,7 @@ public class PDSClient {
 
     public String fetchJobOutputStreamContentAsText(String pdsJobUUID) throws PDSClientException {
         try {
-            return commonApi.getAuthorized("/api/admin/job/" + pdsJobUUID + "/stream/output", String.class).getData();
+            return commonApi.getAuthorized("/api/job/" + pdsJobUUID + "/stream/output", String.class).getData();
         } catch (ApiException e) {
             throw new PDSClientException("Cannot fetch output stream for PDS job:" + pdsJobUUID, e);
         }
@@ -125,7 +125,7 @@ public class PDSClient {
 
     public String fetchJobErrorStreamContentAsText(String pdsJobUUID) throws PDSClientException {
         try {
-            return commonApi.getAuthorized("/api/admin/job/" + pdsJobUUID + "/stream/error", String.class).getData();
+            return commonApi.getAuthorized("/api/job/" + pdsJobUUID + "/stream/error", String.class).getData();
         } catch (ApiException e) {
             throw new PDSClientException("Cannot fetch error stream for PDS job:" + pdsJobUUID, e);
         }
@@ -133,7 +133,7 @@ public class PDSClient {
 
     public String fetchJobResultAsText(String pdsJobUUID) throws PDSClientException {
         try {
-            return commonApi.getAuthorized("/api/admin/job/" + pdsJobUUID + "/result", String.class).getData();
+            return commonApi.getAuthorized("/api/job/" + pdsJobUUID + "/result", String.class).getData();
         } catch (ApiException e) {
             throw new PDSClientException("Cannot fetch result for PDS job:" + pdsJobUUID, e);
         }

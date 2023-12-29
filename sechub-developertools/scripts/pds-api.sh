@@ -93,14 +93,14 @@ function job_messages {
 function job_stream_output {
   local jobUUID=$1
 
-  curl_with_pds_auth -X GET --header "Accept: text/plain" "$PDS_SERVER/api/admin/job/$jobUUID/stream/output"
+  curl_with_pds_auth -X GET --header "Accept: text/plain" "$PDS_SERVER/api/job/$jobUUID/stream/output"
   echo ""
 }
 
 function job_stream_error {
   local jobUUID=$1
 
-  curl_with_pds_auth -X GET --header "Accept: text/plain" "$PDS_SERVER/api/admin/job/$jobUUID/stream/error"
+  curl_with_pds_auth -X GET --header "Accept: text/plain" "$PDS_SERVER/api/job/$jobUUID/stream/error"
   echo ""
 }
 

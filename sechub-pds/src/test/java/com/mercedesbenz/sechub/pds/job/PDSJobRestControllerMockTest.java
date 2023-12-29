@@ -76,6 +76,9 @@ public class PDSJobRestControllerMockTest {
     @MockBean
     private PDSGetJobMessagesService pdsJobMessageService;
 
+    @MockBean
+    private PDSGetJobExecutionDataContentService jobStreamContentService;
+
     @Test
     public void a_job_create_call_calls_creation_service_and_returns_result() throws Exception {
         /* prepare */

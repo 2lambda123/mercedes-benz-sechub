@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mercedesbenz.sechub.pds.PDSAPIConstants;
 import com.mercedesbenz.sechub.pds.security.PDSRoleConstants;
 import com.mercedesbenz.sechub.pds.usecase.PDSStep;
+import com.mercedesbenz.sechub.pds.usecase.UseCaseAdminFetchesJobErrorStream;
+import com.mercedesbenz.sechub.pds.usecase.UseCaseAdminFetchesJobOutputStream;
 import com.mercedesbenz.sechub.pds.usecase.UseCaseUserCreatesJob;
 import com.mercedesbenz.sechub.pds.usecase.UseCaseUserFetchesJobMessages;
 import com.mercedesbenz.sechub.pds.usecase.UseCaseUserFetchesJobResult;
@@ -58,6 +61,9 @@ public class PDSJobRestController {
 
     @Autowired
     private PDSRequestJobCancellationService requestJobCancellationService;
+
+    @Autowired
+    private PDSGetJobExecutionDataContentService jobStreamContentService;
 
     @Validated
     @RequestMapping(path = "create", method = RequestMethod.POST)
@@ -130,6 +136,28 @@ public class PDSJobRestController {
             ) {
         /* @formatter:on */
         return jobMessagesService.getJobMessages(jobUUID);
+    }
+
+    /* @formatter:off */
+    @Validated
+    @RequestMapping(path = "{jobUUID}/stream/output", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @UseCaseAdminFetchesJobOutputStream(@PDSStep(name="rest call",description = "an admin fetches output stream text.", number=1))
+    public String getJobOutputStreamContentAsText(
+            @PathVariable("jobUUID") UUID jobUUID
+            ) {
+        /* @formatter:on */
+        return jobStreamContentService.getJobOutputStreamContentAsText(jobUUID);
+    }
+
+    /* @formatter:off */
+    @Validated
+    @RequestMapping(path = "{jobUUID}/stream/error", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    @UseCaseAdminFetchesJobErrorStream(@PDSStep(name="rest call",description = "an admin fetches error stream text.", number=1))
+    public String getJobErrorStreamContentAsText(
+            @PathVariable("jobUUID") UUID jobUUID
+            ) {
+        /* @formatter:on */
+        return jobStreamContentService.getJobErrorStreamContentAsText(jobUUID);
     }
 
 }
