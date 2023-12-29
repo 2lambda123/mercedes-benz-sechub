@@ -1,0 +1,20 @@
+// SPDX-License-Identifier: MIT
+= System Tests
+
+== Steps
+
+. Download `sechub-pds-tools-cli-x.y.z.jar` from the releases: https://github.com/mercedes-benz/sechub/releases/.
+. Copy `sechub-pds-tools-cli-x.y.z.jar` into this folder.
+. Run system test
++
+Example:
++
+----
+java -jar sechub-pds-tools-cli-0.0.0.jar systemtest --file systemtest_local.json --pds-solutions-rootfolder ../../ --sechub-solution-rootfolder ../../../sechub-solution
+----
+
+== Xray Mock test
+
+System test for Xray are written using the XRAY_MOCK executing mock.sh
+Please Note: the mock.sh script can return a SPDX or a CycloneDX report of the dvwa
+
