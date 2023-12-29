@@ -54,7 +54,7 @@ function curl_with_pds_auth {
 
 function check_parameter {
   param="$1"
-  if [ -z "${!param}" ] ; then
+  if [ -z "${!param}" ]; then
     echo "$param not set"
     FAILED=1
   fi
@@ -125,7 +125,6 @@ function create_job_from_json {
     "$PDS_SERVER/api/job/create" | "$RESULT_FILTER" | "$JSON_FORMATTER"
 }
 
-
 function generate_pds_job_data {
   local sechub_job_uuid="$1"
   local product_id="$2"
@@ -144,14 +143,13 @@ function upload {
   local file_to_upload="$2"
   local upload_file_name="sourcecode.zip"
 
-  if [[ ! -f "$file_to_upload" ]] ; then
+  if [[ ! -f "$file_to_upload" ]]; then
     echo "File \"$file_to_upload\" does not exist."
     exit 1
   fi
 
-  local file_to_upload_lowercased="$( echo "$file_to_upload" | tr '[:upper:]' '[:lower:]' )"
-  if [[ "$file_to_upload_lowercased" == *.tar ]]
-  then
+  local file_to_upload_lowercased="$(echo "$file_to_upload" | tr '[:upper:]' '[:lower:]')"
+  if [[ "$file_to_upload_lowercased" == *.tar ]]; then
     upload_file_name="binaries.tar"
   fi
 
@@ -165,7 +163,7 @@ function upload {
     --form "checkSum=$checkSum" \
     "$PDS_SERVER/api/job/$pdsJobUUID/upload/$upload_file_name" | "$RESULT_FILTER"
 
-  if [[ "$?" == "0" ]] ; then
+  if [[ "$?" == "0" ]]; then
     echo "Uploaded file: \"$file_to_upload\""
   else
     echo "Upload failed."
@@ -181,62 +179,62 @@ FAILED=0
 PDS_API_VERSION="1.0"
 NOFORMAT_PIPE="cat -"
 RESULT_FILTER="tail -1"
-if which jq >/dev/null 2>&1 ; then
-  JSON_FORMATTER="jq ."   # . is needed or piping the result is not possible
+if which jq >/dev/null 2>&1; then
+  JSON_FORMATTER="jq ." # . is needed or piping the result is not possible
   JSON_FORMAT_SORT="jq sort"
 else
-  echo "### Hint: Install jq (https://github.com/stedolan/jq) to improve output." >&2  # appears only on stderr
+  echo "### Hint: Install jq (https://github.com/stedolan/jq) to improve output." >&2 # appears only on stderr
   JSON_FORMATTER="$NOFORMAT_PIPE"
   JSON_FORMAT_SORT="$NOFORMAT_PIPE"
 fi
 
 # Parse command line options (everything starting with '-')
 opt="$1"
-while [[ "${opt:0:1}" == "-" ]] ; do
+while [[ "${opt:0:1}" == "-" ]]; do
   case $opt in
-  -a|-apitoken)
-    PDS_APITOKEN="$2"
-    shift 2
-    ;;
-  -d|-debug)
-    # Plain output including header information from curl
-    RESULT_FILTER="$NOFORMAT_PIPE"
-    JSON_FORMATTER="$NOFORMAT_PIPE"
-    JSON_FORMAT_SORT="$NOFORMAT_PIPE"
-    shift
-    ;;
-  -h|-help)
-    usage
-    exit 0
-    ;;
-  -p|-plain)
-    JSON_FORMATTER="$NOFORMAT_PIPE"
-    JSON_FORMAT_SORT="$NOFORMAT_PIPE"
-    shift
-    ;;
-  -s|-server)
-    PDS_SERVER="$2"
-    shift 2
-    ;;
-  -u|-user)
-    PDS_USERID="$2"
-    shift 2
-    ;;
-  -v|-verbose)
-    echo "### Connecting as $PDS_USERID to $PDS_SERVER"
-    shift
-    ;;
-  *)
-    echo "Unknown option: \"$opt\""
-    usage
-    exit 1
-    ;;
+    -a | -apitoken)
+      PDS_APITOKEN="$2"
+      shift 2
+      ;;
+    -d | -debug)
+      # Plain output including header information from curl
+      RESULT_FILTER="$NOFORMAT_PIPE"
+      JSON_FORMATTER="$NOFORMAT_PIPE"
+      JSON_FORMAT_SORT="$NOFORMAT_PIPE"
+      shift
+      ;;
+    -h | -help)
+      usage
+      exit 0
+      ;;
+    -p | -plain)
+      JSON_FORMATTER="$NOFORMAT_PIPE"
+      JSON_FORMAT_SORT="$NOFORMAT_PIPE"
+      shift
+      ;;
+    -s | -server)
+      PDS_SERVER="$2"
+      shift 2
+      ;;
+    -u | -user)
+      PDS_USERID="$2"
+      shift 2
+      ;;
+    -v | -verbose)
+      echo "### Connecting as $PDS_USERID to $PDS_SERVER"
+      shift
+      ;;
+    *)
+      echo "Unknown option: \"$opt\""
+      usage
+      exit 1
+      ;;
   esac
   opt="$1"
 done
 
 # Check if mandatory parameters are defined
-for parameter in PDS_SERVER PDS_USERID PDS_APITOKEN ; do
+for parameter in PDS_SERVER PDS_USERID PDS_APITOKEN; do
   check_parameter "$parameter"
 done
 
@@ -248,41 +246,52 @@ case "$action" in
     check_alive
     ;;
   create_job)
-    PDS_PRODUCT_ID="$1" ; check_parameter PDS_PRODUCT_ID
-    SECHUB_JOB_UUID="$2" ; check_parameter SECHUB_JOB_UUID
-    [ "$FAILED" == 0 ] && create_job "$PDS_PRODUCT_ID" "$SECHUB_JOB_UUID" 
+    PDS_PRODUCT_ID="$1"
+    check_parameter PDS_PRODUCT_ID
+    SECHUB_JOB_UUID="$2"
+    check_parameter SECHUB_JOB_UUID
+    [ "$FAILED" == 0 ] && create_job "$PDS_PRODUCT_ID" "$SECHUB_JOB_UUID"
     ;;
   create_job_from_json)
-    JSON_FILE="$1" ; check_parameter JSON_FILE
-    [ "$FAILED" == 0 ] && create_job_from_json "$JSON_FILE" 
+    JSON_FILE="$1"
+    check_parameter JSON_FILE
+    [ "$FAILED" == 0 ] && create_job_from_json "$JSON_FILE"
     ;;
   upload)
-    PDS_JOB_UUID="$1" ; check_parameter PDS_JOB_UUID
-    FILE_TO_UPLOAD="$2" ; check_parameter FILE_TO_UPLOAD
-    [ "$FAILED" == 0 ] && upload "$PDS_JOB_UUID" "$FILE_TO_UPLOAD" 
+    PDS_JOB_UUID="$1"
+    check_parameter PDS_JOB_UUID
+    FILE_TO_UPLOAD="$2"
+    check_parameter FILE_TO_UPLOAD
+    [ "$FAILED" == 0 ] && upload "$PDS_JOB_UUID" "$FILE_TO_UPLOAD"
     ;;
   mark_job_ready_to_start)
-    JOB_UUID="$1"   ; check_parameter JOB_UUID
+    JOB_UUID="$1"
+    check_parameter JOB_UUID
     [ "$FAILED" == 0 ] && mark_job_ready_to_start "$JOB_UUID"
     ;;
   job_status)
-    JOB_UUID="$1"   ; check_parameter JOB_UUID
+    JOB_UUID="$1"
+    check_parameter JOB_UUID
     [ "$FAILED" == 0 ] && job_status "$JOB_UUID"
     ;;
   job_result)
-    JOB_UUID="$1"   ; check_parameter JOB_UUID
+    JOB_UUID="$1"
+    check_parameter JOB_UUID
     [ "$FAILED" == 0 ] && job_result "$JOB_UUID"
     ;;
   job_stream_output)
-    JOB_UUID="$1"   ; check_parameter JOB_UUID
+    JOB_UUID="$1"
+    check_parameter JOB_UUID
     [ "$FAILED" == 0 ] && job_stream_output "$JOB_UUID"
     ;;
   job_stream_error)
-    JOB_UUID="$1"   ; check_parameter JOB_UUID
+    JOB_UUID="$1"
+    check_parameter JOB_UUID
     [ "$FAILED" == 0 ] && job_stream_error "$JOB_UUID"
     ;;
   job_messages)
-    JOB_UUID="$1"   ; check_parameter JOB_UUID
+    JOB_UUID="$1"
+    check_parameter JOB_UUID
     [ "$FAILED" == 0 ] && job_messages "$JOB_UUID"
     ;;
   monitoring_status)
@@ -302,7 +311,7 @@ esac
 [ "$JSON_FORMATTER" == "$NOFORMAT_PIPE" ] && echo ""
 
 # failed?
-if [ "$FAILED" != 0 ] ; then
+if [ "$FAILED" != 0 ]; then
   usage
   exit 1
 fi
