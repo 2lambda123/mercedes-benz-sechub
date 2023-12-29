@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: MIT
 package com.mercedesbenz.sechub.integrationtest.api;
 
-import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mercedesbenz.sechub.commons.model.SecHubMessagesList;
 import com.mercedesbenz.sechub.commons.pds.data.PDSJobStatus;
 import com.mercedesbenz.sechub.commons.pds.data.PDSJobStatusState;
@@ -16,252 +11,282 @@ import com.mercedesbenz.sechub.integrationtest.internal.TestJSONHelper;
 import com.mercedesbenz.sechub.integrationtest.internal.TestRestHelper;
 import com.mercedesbenz.sechub.test.PDSTestURLBuilder;
 import com.mercedesbenz.sechub.test.TestUtil;
+import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class AsPDSUser {
 
-    private static final int DEFAULT_SECONDS_TO_WAIT_BEFORE_TIMEOUT = 10;
-    TestUser user;
+  private static final int DEFAULT_SECONDS_TO_WAIT_BEFORE_TIMEOUT = 10;
+  TestUser user;
 
-    AsPDSUser(TestUser user) {
-        this.user = user;
-    }
+  AsPDSUser(TestUser user) { this.user = user; }
 
-    private TestRestHelper getRestHelper() {
-        return getContext().getPDSRestHelper(user);
-    }
+  private TestRestHelper getRestHelper() {
+    return getContext().getPDSRestHelper(user);
+  }
 
-    private PDSTestURLBuilder getPDSUrlBuilder() {
-        return getContext().getPDSUrlBuilder();
-    }
+  private PDSTestURLBuilder getPDSUrlBuilder() {
+    return getContext().getPDSUrlBuilder();
+  }
 
-    private IntegrationTestContext getContext() {
-        return IntegrationTestContext.get();
-    }
+  private IntegrationTestContext getContext() {
+    return IntegrationTestContext.get();
+  }
 
-    public void markJobAsReadyToStart(UUID jobUUID) {
-        TestRestHelper restHelper = getRestHelper();
-        PDSTestURLBuilder urlBuilder = getPDSUrlBuilder();
-        markJobAsReadyToStart(jobUUID, restHelper, urlBuilder);
-    }
+  public void markJobAsReadyToStart(UUID jobUUID) {
+    TestRestHelper restHelper = getRestHelper();
+    PDSTestURLBuilder urlBuilder = getPDSUrlBuilder();
+    markJobAsReadyToStart(jobUUID, restHelper, urlBuilder);
+  }
 
-    public static void markJobAsReadyToStart(UUID jobUUID, TestRestHelper restHelper, PDSTestURLBuilder urlBuilder) {
-        restHelper.put(urlBuilder.buildMarkJobReadyToStart(jobUUID));
-    }
+  public static void markJobAsReadyToStart(UUID jobUUID,
+                                           TestRestHelper restHelper,
+                                           PDSTestURLBuilder urlBuilder) {
+    restHelper.put(urlBuilder.buildMarkJobReadyToStart(jobUUID));
+  }
 
-    public String getJobStatus(UUID jobUUID) {
-        return getRestHelper().getJSON(getPDSUrlBuilder().buildGetJobStatus(jobUUID));
-    }
+  public String getJobStatus(UUID jobUUID) {
+    return getRestHelper().getJSON(
+        getPDSUrlBuilder().buildGetJobStatus(jobUUID));
+  }
 
-    public PDSJobStatusState getJobStatusState(UUID jobUUID) {
-        PDSJobStatus pdsJobStatus = getJobStatusObject(jobUUID);
-        return pdsJobStatus.state;
-    }
+  public PDSJobStatusState getJobStatusState(UUID jobUUID) {
+    PDSJobStatus pdsJobStatus = getJobStatusObject(jobUUID);
+    return pdsJobStatus.state;
+  }
 
-    public PDSJobStatus getJobStatusObject(UUID jobUUID) {
-        String status = getJobStatus(jobUUID);
-        PDSJobStatus pdsJobStatus = TestJSONHelper.get().createFromJSON(status, PDSJobStatus.class);
-        return pdsJobStatus;
-    }
+  public PDSJobStatus getJobStatusObject(UUID jobUUID) {
+    String status = getJobStatus(jobUUID);
+    PDSJobStatus pdsJobStatus =
+        TestJSONHelper.get().createFromJSON(status, PDSJobStatus.class);
+    return pdsJobStatus;
+  }
 
-    public String getJobReport(UUID jobUUID) {
-        return getJobReport(jobUUID, false, DEFAULT_SECONDS_TO_WAIT_BEFORE_TIMEOUT);
-    }
+  public String getJobReport(UUID jobUUID) {
+    return getJobReport(jobUUID, false, DEFAULT_SECONDS_TO_WAIT_BEFORE_TIMEOUT);
+  }
 
-    public String getJobReportOrErrorText(UUID jobUUID) {
-        return getJobReport(jobUUID, true, DEFAULT_SECONDS_TO_WAIT_BEFORE_TIMEOUT);
-    }
+  public String getJobReportOrErrorText(UUID jobUUID) {
+    return getJobReport(jobUUID, true, DEFAULT_SECONDS_TO_WAIT_BEFORE_TIMEOUT);
+  }
 
-    public String getJobReport(UUID jobUUID, boolean orGetErrorText, long secondsToWait) {
-        return internalFetchReport(jobUUID, orGetErrorText, secondsToWait, true);
-    }
+  public String getJobReport(UUID jobUUID, boolean orGetErrorText,
+                             long secondsToWait) {
+    return internalFetchReport(jobUUID, orGetErrorText, secondsToWait, true);
+  }
 
-    String internalFetchReportWithoutAutoDump(UUID jobUUID, long secondsToWait) {
-        return internalFetchReport(jobUUID, false, secondsToWait, false);
-    }
+  String internalFetchReportWithoutAutoDump(UUID jobUUID, long secondsToWait) {
+    return internalFetchReport(jobUUID, false, secondsToWait, false);
+  }
 
-    private String internalFetchReport(UUID jobUUID, boolean orGetErrorText, long secondsToWait, boolean autoDumpEnabled) {
-        long waitTimeInMillis = 1000;
-        int count = 0;
-        boolean jobEnded = false;
-        String jobstatus = null;
-        while (count < secondsToWait) {
-            jobstatus = getJobStatus(jobUUID);
-            if (jobstatus.indexOf("DONE") != -1) {
-                jobEnded = true;
-                break;
-            }
-            if (jobstatus.indexOf("FAILED") != -1) {
-                if (!orGetErrorText) {
-                    if (autoDumpEnabled) {
-                        TestAPI.dumpPDSJobOutput(jobUUID);
-                    }
-                    throw new IllegalStateException("Job did fail:" + jobstatus);
-                }
-                jobEnded = true;
-                break;
-            }
-
-            TestUtil.waitMilliseconds(waitTimeInMillis);
-            ++count;
+  private String internalFetchReport(UUID jobUUID, boolean orGetErrorText,
+                                     long secondsToWait,
+                                     boolean autoDumpEnabled) {
+    long waitTimeInMillis = 1000;
+    int count = 0;
+    boolean jobEnded = false;
+    String jobstatus = null;
+    while (count < secondsToWait) {
+      jobstatus = getJobStatus(jobUUID);
+      if (jobstatus.indexOf("DONE") != -1) {
+        jobEnded = true;
+        break;
+      }
+      if (jobstatus.indexOf("FAILED") != -1) {
+        if (!orGetErrorText) {
+          if (autoDumpEnabled) {
+            TestAPI.dumpPDSJobOutput(jobUUID);
+          }
+          throw new IllegalStateException("Job did fail:" + jobstatus);
         }
-        if (!jobEnded) {
-            throw new IllegalStateException("Even after " + count + " retries, every waiting " + waitTimeInMillis
-                    + " ms, no job report state ENDED was accessible!\nLAST fetched jobstatus for " + jobUUID + " was:\n" + jobstatus);
-        }
-        /* okay report is available - so do download */
-        if (orGetErrorText) {
-            return getRestHelper().getJSON(getPDSUrlBuilder().buildGetJobResultOrErrorText(jobUUID));
-        }
-        return getRestHelper().getJSON(getPDSUrlBuilder().buildGetJobResult(jobUUID));
+        jobEnded = true;
+        break;
+      }
+
+      TestUtil.waitMilliseconds(waitTimeInMillis);
+      ++count;
+    }
+    if (!jobEnded) {
+      throw new IllegalStateException(
+          "Even after " + count + " retries, every waiting " +
+          waitTimeInMillis +
+          " ms, no job report state ENDED was accessible!\nLAST fetched jobstatus for " +
+          jobUUID + " was:\n" + jobstatus);
+    }
+    /* okay report is available - so do download */
+    if (orGetErrorText) {
+      return getRestHelper().getJSON(
+          getPDSUrlBuilder().buildGetJobResultOrErrorText(jobUUID));
+    }
+    return getRestHelper().getJSON(
+        getPDSUrlBuilder().buildGetJobResult(jobUUID));
+  }
+
+  public boolean getIsAlive() {
+    getRestHelper().head(getPDSUrlBuilder().buildAnonymousCheckAlive());
+    return true;
+  }
+
+  public String getMonitoringStatus() {
+    String url = getPDSUrlBuilder().buildAdminGetMonitoringStatus();
+    String result = getRestHelper().getJSON(url);
+    return result;
+  }
+
+  public AsPDSUser cancelJob(UUID jobUUID) {
+    String url = getPDSUrlBuilder().buildCancelJob(jobUUID);
+    getRestHelper().post(url);
+    return this;
+  }
+
+  public String createJobFor(UUID sechubJobUUID,
+                             PDSIntTestProductIdentifier identifier) {
+    return createJobFor(sechubJobUUID, identifier, null);
+  }
+
+  public String createJobFor(UUID sechubJobUUID,
+                             PDSIntTestProductIdentifier identifier,
+                             Map<String, String> customParameters) {
+
+    Map<String, String> internalParameters = new LinkedHashMap<>();
+
+    /* create default params */
+    switch (identifier) {
+    case PDS_INTTEST_CODESCAN:
+      internalParameters.put("product1.qualititycheck.enabled", "false");
+      internalParameters.put("product1.level", "1");
+      break;
+    case PDS_INTTEST_INFRASCAN:
+    case PDS_INTTEST_WEBSCAN:
+    default:
+      internalParameters.put("nothing.special", "true");
+    }
+    if (customParameters != null) {
+      internalParameters.putAll(customParameters);
     }
 
-    public boolean getIsAlive() {
-        getRestHelper().head(getPDSUrlBuilder().buildAnonymousCheckAlive());
-        return true;
-    }
+    TestRestHelper restHelper = getRestHelper();
+    PDSTestURLBuilder urlBuilder = getPDSUrlBuilder();
 
-    public String getMonitoringStatus() {
-        String url = getPDSUrlBuilder().buildAdminGetMonitoringStatus();
-        String result = getRestHelper().getJSON(url);
-        return result;
-    }
+    return TestAPI.createPDSJobFor(sechubJobUUID, internalParameters,
+                                   identifier.getId(), restHelper, urlBuilder);
+  }
 
-    public AsPDSUser cancelJob(UUID jobUUID) {
-        String url = getPDSUrlBuilder().buildCancelJob(jobUUID);
-        getRestHelper().post(url);
-        return this;
-    }
+  public String createJobByJsonConfiguration(String json) {
+    TestRestHelper restHelper = getRestHelper();
+    PDSTestURLBuilder urlBuilder = getPDSUrlBuilder();
 
-    public String createJobFor(UUID sechubJobUUID, PDSIntTestProductIdentifier identifier) {
-        return createJobFor(sechubJobUUID, identifier, null);
-    }
+    return TestAPI.createPDSJob(restHelper, urlBuilder, json);
+  }
 
-    public String createJobFor(UUID sechubJobUUID, PDSIntTestProductIdentifier identifier, Map<String, String> customParameters) {
+  public AsPDSUser upload(UUID pdsJobUUID, String fileName,
+                          String pathInsideResources) {
+    File uploadFile = IntegrationTestFileSupport.getTestfileSupport()
+                          .createFileFromResourcePath(pathInsideResources);
+    return upload(pdsJobUUID, fileName, uploadFile);
+  }
 
-        Map<String, String> internalParameters = new LinkedHashMap<>();
+  public AsPDSUser upload(UUID pdsJobUUID, String uploadName, File file) {
+    upload(getPDSUrlBuilder(), getRestHelper(), pdsJobUUID, uploadName, file);
+    return this;
+  }
 
-        /* create default params */
-        switch (identifier) {
-        case PDS_INTTEST_CODESCAN:
-            internalParameters.put("product1.qualititycheck.enabled", "false");
-            internalParameters.put("product1.level", "1");
-            break;
-        case PDS_INTTEST_INFRASCAN:
-        case PDS_INTTEST_WEBSCAN:
-        default:
-            internalParameters.put("nothing.special", "true");
-        }
-        if (customParameters != null) {
-            internalParameters.putAll(customParameters);
-        }
+  public String getJobOutputStreamText(UUID jobUUID) {
+    return internalFetchOutputStreamTextWithoutAutoDump(jobUUID);
+  }
 
-        TestRestHelper restHelper = getRestHelper();
-        PDSTestURLBuilder urlBuilder = getPDSUrlBuilder();
+  String internalFetchOutputStreamTextWithoutAutoDump(UUID jobUUID) {
+    String url =
+        getPDSUrlBuilder().buildPdsUserFetchesJobOutputStreamUrl(jobUUID);
+    String result = getRestHelper().getStringFromURL(url);
+    return result;
+  }
 
-        return TestAPI.createPDSJobFor(sechubJobUUID, internalParameters, identifier.getId(), restHelper, urlBuilder);
-    }
+  public String getJobErrorStreamText(UUID jobUUID) {
+    return internalFetchErrorStreamTextWithoutAutoDump(jobUUID);
+  }
 
-    public String createJobByJsonConfiguration(String json) {
-        TestRestHelper restHelper = getRestHelper();
-        PDSTestURLBuilder urlBuilder = getPDSUrlBuilder();
+  String internalFetchErrorStreamTextWithoutAutoDump(UUID jobUUID) {
+    String url =
+        getPDSUrlBuilder().buildPDSUserFetchesJobErrorStreamUrl(jobUUID);
+    String result = getRestHelper().getStringFromURL(url);
+    return result;
+  }
 
-        return TestAPI.createPDSJob(restHelper, urlBuilder, json);
-    }
+  public static void upload(PDSTestURLBuilder urlBuilder,
+                            TestRestHelper restHelper, UUID pdsJobUUID,
+                            String uploadName, File file) {
+    String checkSum = TestAPI.createSHA256Of(file);
+    upload(urlBuilder, restHelper, pdsJobUUID, uploadName, file, checkSum);
+  }
 
-    public AsPDSUser upload(UUID pdsJobUUID, String fileName, String pathInsideResources) {
-        File uploadFile = IntegrationTestFileSupport.getTestfileSupport().createFileFromResourcePath(pathInsideResources);
-        return upload(pdsJobUUID, fileName, uploadFile);
-    }
+  public AsPDSUser uploadWithWrongChecksum(UUID pdsJobUUID, String uploadName,
+                                           String pathInsideResources) {
+    File uploadFile = IntegrationTestFileSupport.getTestfileSupport()
+                          .createFileFromResourcePath(pathInsideResources);
+    return uploadWithWrongChecksum(pdsJobUUID, uploadName, uploadFile);
+  }
 
-    public AsPDSUser upload(UUID pdsJobUUID, String uploadName, File file) {
-        upload(getPDSUrlBuilder(), getRestHelper(), pdsJobUUID, uploadName, file);
-        return this;
-    }
+  public AsPDSUser uploadWithWrongChecksum(UUID pdsJobUUID, String uploadName,
+                                           File file) {
+    upload(getPDSUrlBuilder(), getRestHelper(), pdsJobUUID, uploadName, file,
+           "wrong-checksum");
+    return this;
+  }
 
-    public String getJobOutputStreamText(UUID jobUUID) {
-        return internalFetchOutputStreamTextWithoutAutoDump(jobUUID);
-    }
+  private static void upload(PDSTestURLBuilder urlBuilder,
+                             TestRestHelper restHelper, UUID pdsJobUUID,
+                             String uploadName, File file, String checkSum) {
+    String url = urlBuilder.buildUpload(pdsJobUUID, uploadName);
+    restHelper.upload(url, file, checkSum);
+  }
 
-    String internalFetchOutputStreamTextWithoutAutoDump(UUID jobUUID) {
-        String url = getPDSUrlBuilder().buildPdsUserFetchesJobOutputStreamUrl(jobUUID);
-        String result = getRestHelper().getStringFromURL(url);
-        return result;
-    }
+  public String getServerConfiguration() {
+    String url = getPDSUrlBuilder().buildAdminGetServerConfiguration();
+    String result = getRestHelper().getJSON(url);
+    return result;
+  }
 
-    public String getJobErrorStreamText(UUID jobUUID) {
-        return internalFetchErrorStreamTextWithoutAutoDump(jobUUID);
-    }
+  public void updateAutoCleanupConfiguration(TestAutoCleanupData data) {
+    String json = TestJSONHelper.get().createJSON(data);
+    updateAutoCleanupConfiguration(json);
+  }
 
-    String internalFetchErrorStreamTextWithoutAutoDump(UUID jobUUID) {
-        String url = getPDSUrlBuilder().buildPDSUserFetchesJobErrorStreamUrl(jobUUID);
-        String result = getRestHelper().getStringFromURL(url);
-        return result;
-    }
+  public void updateAutoCleanupConfiguration(String json) {
+    String url =
+        getPDSUrlBuilder().buildAdminUpdatesAutoCleanupConfigurationUrl();
+    getRestHelper().putJSON(url, json);
+  }
 
-    public static void upload(PDSTestURLBuilder urlBuilder, TestRestHelper restHelper, UUID pdsJobUUID, String uploadName, File file) {
-        String checkSum = TestAPI.createSHA256Of(file);
-        upload(urlBuilder, restHelper, pdsJobUUID, uploadName, file, checkSum);
-    }
+  public TestAutoCleanupData fetchAutoCleanupConfiguration() {
+    String url =
+        getPDSUrlBuilder().buildAdminFetchesAutoCleanupConfigurationUrl();
 
-    public AsPDSUser uploadWithWrongChecksum(UUID pdsJobUUID, String uploadName, String pathInsideResources) {
-        File uploadFile = IntegrationTestFileSupport.getTestfileSupport().createFileFromResourcePath(pathInsideResources);
-        return uploadWithWrongChecksum(pdsJobUUID, uploadName, uploadFile);
-    }
+    String json = getRestHelper().getJSON(url);
+    return TestJSONHelper.get().createFromJSON(json, TestAutoCleanupData.class);
+  }
 
-    public AsPDSUser uploadWithWrongChecksum(UUID pdsJobUUID, String uploadName, File file) {
-        upload(getPDSUrlBuilder(), getRestHelper(), pdsJobUUID, uploadName, file, "wrong-checksum");
-        return this;
-    }
+  public SecHubMessagesList getJobMessages(UUID pdsJobUUID) {
+    return internalGetJobMessagesWithoutAutoDump(pdsJobUUID);
+  }
 
-    private static void upload(PDSTestURLBuilder urlBuilder, TestRestHelper restHelper, UUID pdsJobUUID, String uploadName, File file, String checkSum) {
-        String url = urlBuilder.buildUpload(pdsJobUUID, uploadName);
-        restHelper.upload(url, file, checkSum);
-    }
+  SecHubMessagesList internalGetJobMessagesWithoutAutoDump(UUID pdsJobUUID) {
+    String url = getPDSUrlBuilder().buildGetJobMessages(pdsJobUUID);
+    String json = getRestHelper().getJSON(url);
+    return SecHubMessagesList.fromJSONString(json);
+  }
 
-    public String getServerConfiguration() {
-        String url = getPDSUrlBuilder().buildAdminGetServerConfiguration();
-        String result = getRestHelper().getJSON(url);
-        return result;
-    }
+  public String getJobMetaData(UUID pdsJobUUID) {
+    String url = getPDSUrlBuilder().buildAdminFetchesJobMetaData(pdsJobUUID);
+    String text = getRestHelper().getStringFromURL(url);
+    return text;
+  }
 
-    public void updateAutoCleanupConfiguration(TestAutoCleanupData data) {
-        String json = TestJSONHelper.get().createJSON(data);
-        updateAutoCleanupConfiguration(json);
-
-    }
-
-    public void updateAutoCleanupConfiguration(String json) {
-        String url = getPDSUrlBuilder().buildAdminUpdatesAutoCleanupConfigurationUrl();
-        getRestHelper().putJSON(url, json);
-    }
-
-    public TestAutoCleanupData fetchAutoCleanupConfiguration() {
-        String url = getPDSUrlBuilder().buildAdminFetchesAutoCleanupConfigurationUrl();
-
-        String json = getRestHelper().getJSON(url);
-        return TestJSONHelper.get().createFromJSON(json, TestAutoCleanupData.class);
-    }
-
-    public SecHubMessagesList getJobMessages(UUID pdsJobUUID) {
-        return internalGetJobMessagesWithoutAutoDump(pdsJobUUID);
-    }
-
-    SecHubMessagesList internalGetJobMessagesWithoutAutoDump(UUID pdsJobUUID) {
-        String url = getPDSUrlBuilder().buildGetJobMessages(pdsJobUUID);
-        String json = getRestHelper().getJSON(url);
-        return SecHubMessagesList.fromJSONString(json);
-    }
-
-    public String getJobMetaData(UUID pdsJobUUID) {
-        String url = getPDSUrlBuilder().buildAdminFetchesJobMetaData(pdsJobUUID);
-        String text = getRestHelper().getStringFromURL(url);
-        return text;
-    }
-
-    PDSJobStatus internalFetchStatusWithoutAutoDump(UUID jobUUID) {
-        String url = getPDSUrlBuilder().buildGetJobStatus(jobUUID);
-        String json = getRestHelper().getJSON(url);
-        return TestJSONHelper.get().createFromJSON(json, PDSJobStatus.class);
-    }
-
+  PDSJobStatus internalFetchStatusWithoutAutoDump(UUID jobUUID) {
+    String url = getPDSUrlBuilder().buildGetJobStatus(jobUUID);
+    String json = getRestHelper().getJSON(url);
+    return TestJSONHelper.get().createFromJSON(json, PDSJobStatus.class);
+  }
 }
