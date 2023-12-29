@@ -16,7 +16,7 @@ then
 	exit 1
 fi
 cp -r "$test_file" "$current_test_folder/$test_file"
-cd "$current_test_folder"
+cd "$current_test_folder" || exit
 tar -cvf "$test_file".tar "$test_file"
 
 
