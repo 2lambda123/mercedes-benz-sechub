@@ -4,28 +4,30 @@
 confidence=""
 
 case "$BANDIT_CONFIDENCE" in
-    "HIGH")
-        confidence="-iii"
+  "HIGH")
+    confidence="-iii"
     ;;
-    "MEDIUM")
-        confidence="-ii"
+  "MEDIUM")
+    confidence="-ii"
     ;;
-    "LOW")
-        confidence="-i"
-;; esac
+  "LOW")
+    confidence="-i"
+    ;;
+esac
 
 severity=""
 
 case "$BANDIT_SEVERITY" in
-    "HIGH")
-        severity="-lll"
+  "HIGH")
+    severity="-lll"
     ;;
-    "MEDIUM")
-        severity="-ll"
+  "MEDIUM")
+    severity="-ll"
     ;;
-    "LOW")
-        severity="-l"
-;; esac
+  "LOW")
+    severity="-l"
+    ;;
+esac
 
 cd "$PDS_JOB_EXTRACTED_SOURCES_FOLDER/" || exit
 bandit --format sarif --ignore-nosec "$severity" "$confidence" --output "$PDS_JOB_RESULT_FILE" --recursive "."
