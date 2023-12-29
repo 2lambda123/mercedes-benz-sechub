@@ -5,17 +5,17 @@ import java.util.UUID;
 
 public record JobInformationListEntry(
 
-        UUID jobUUID,
+    UUID jobUUID,
 
-        LocalDateTime since,
+    LocalDateTime since,
 
-        JobStatus status,
+    JobStatus status,
 
-        String projectId) {
+    String projectId) {
 
-    public static final String PROPERTY_JOB_UUID = "jobUUID";
-    public static final String PROPERTY_STATUS = "status";
+  public static final String PROPERTY_JOB_UUID = "jobUUID";
+  public static final String PROPERTY_STATUS = "status";
 
-    public static final String PROPERTY_PROJECT_ID = "projectId";
-    public static final String PROPERTY_SINCE = "since";
+  public static final String PROPERTY_PROJECT_ID = "projectId";
+  public static final String PROPERTY_SINCE = "since";
 }
