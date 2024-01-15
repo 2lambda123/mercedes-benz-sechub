@@ -98,6 +98,20 @@ allprojects {
     apply from: rootProject.file('gradle/spotless.gradle')
 
     def customMavenRepoURL = System.getenv('CUST_MVN_URL')
+    repositories {
+        if (customMavenRepoURL != null) {
+            maven { url customMavenRepoURL }
+        } else {
+            mavenCentral()
+        }
+    }
+
+    /* every project has got this additional task */
+    task prepareGitPush(dependsOn: spotlessApply) {}
+    group = "com.mercedesbenz.sechub"
+    apply from: rootProject.file('gradle/spotless.gradle')
+
+    def customMavenRepoURL = System.getenv('CUST_MVN_URL')
     if (customMavenRepoURL!=null){
         repositories {
             maven { url "${customMavenRepoURL}" } // e.g. a corporate nexus or artifactory...
