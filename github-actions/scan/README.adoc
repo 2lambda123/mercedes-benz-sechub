@@ -102,5 +102,6 @@ To run the tests you have to run this command:
 
 [source,npm]
 ----
-npm run test
+npm run test && 
+ This will run the `ncc` compiler and transpile the files from the src folder into the files from the dist folder. The dist files will be executed by the GitHub Action.
 ----
