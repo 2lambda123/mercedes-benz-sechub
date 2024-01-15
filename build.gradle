@@ -60,7 +60,7 @@ cyclonedxBom {
 /* check buildsystem */
 def githubActor = System.getenv('GITHUB_ACTOR')
 
-def atGitHubActions = false
+def atGitHubActions = System.getenv('GITHUB_ACTIONS') == 'true
 
 if (githubActor == null || githubActor.isEmpty()){
     /* not inside github actions */
