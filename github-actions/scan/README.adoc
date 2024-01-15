@@ -53,7 +53,7 @@ To be able to use this action you need a SecHub project. Check the https://merce
 
     # OPTIONAL: job (pipeline) will be marked as failed if sechub finds something
     # DEFAULT: true
-    fail-job-with-findings: true
+    fail-job-with-findings: false
 ----
 
 === Outputs
