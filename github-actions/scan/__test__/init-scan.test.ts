@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
-import {initReportFormats, initSecHubJson} from "../src/init-scan";
+import {initReportFormats, initSecHubJson, createSecHubJsonFile} from "../src/init-scan";
+jest.mock('../../shared/src/cli-helper');
 
 jest.mock('../../shared/src/cli-helper');
 import {createSecHubJsonFile} from '../../shared/src/cli-helper';
@@ -29,6 +30,11 @@ describe('initSecHubJson', function () {
 
 describe('initReportFormats', function () {
     it('throws Error if no valid report formats found', function () {
+    /* prepare */
+    const reportFormats = 'yaml,xml';
+
+    /* execute & test */
+    expect(() => initReportFormats(reportFormats)).toThrow(Error);
         /* prepare */
         const reportFormats = 'yaml,xml';
 
@@ -36,7 +42,7 @@ describe('initReportFormats', function () {
         expect(() => initReportFormats(reportFormats)).toThrow(Error);
     });
 
-    it('adds missing json report at the beginning', function () {
+    it('adds missing json report at the beginning & createSecHubJsonFile', function () {
         /* prepare */
         const reportFormats = 'html';
 
