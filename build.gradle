@@ -14,7 +14,18 @@ buildscript{
     	}
     }
 
-	dependencies{
+	dependencies {
+	apply from: "${rootProject.projectDir}/gradle/build-versioning.gradle"
+	apply from: "${rootProject.projectDir}/gradle/build-java.gradle"
+	apply from: "${rootProject.projectDir}/gradle/build-spring.gradle"
+	apply from: "${rootProject.projectDir}/gradle/build-maven.gradle"
+	apply from: "${rootProject.projectDir}/gradle/build-eclipse.gradle" 
+
+	classpath gradleApi()
+	classpath "org.ajoberstar.grgit:grgit-gradle:${libraryVersion.grgit}" // necessary for version calculation
+	classpath "com.epages:restdocs-api-spec-gradle-plugin:${libraryVersion.restDocsApiSpec}"
+	classpath "org.owasp:dependency-check-gradle:${libraryVersion.dependency_check}"
+	classpath "org.cyclonedx:cyclonedx-gradle-plugin:1.7.4"
 		classpath gradleApi()
 		classpath "org.ajoberstar.grgit:grgit-gradle:${libraryVersion.grgit}" // necessary for version calculation
 		classpath "com.epages:restdocs-api-spec-gradle-plugin:${libraryVersion.restDocsApiSpec}"
