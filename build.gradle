@@ -78,15 +78,14 @@ ext {
 }
 
 /* own clean task - we need this because root project has not included a module providing the task */
-task internalCleanRootBuildFolder(type: Delete){
-
+task internalCleanRootBuildFolder(type: Delete) {
     doFirst {
         def rootBuildFolder = file("${project.projectDir}/build")
-        if (! rootBuildFolder.exists()){
-            rootBuildFolder.mkdirs();
-        } 
-        delete rootBuildFolder.listFiles() // so we do NOT clear buildSrc/build here!
+        if (rootBuildFolder.exists()) {
+            delete rootBuildFolder.listFiles()
+        }
     }
+}
 
 }
 
