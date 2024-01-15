@@ -117,23 +117,25 @@ allprojects {
             maven { url "${customMavenRepoURL}" } // e.g. a corporate nexus or artifactory...
         }
     }else{
-        repositories {
-             mavenCentral()
-        }
+spotless {
+    groovyGradle {
+        target '*.gradle', 'gradle/*.gradle'
     }
-
-    /* every project has got this additional task */
-    task prepareGitPush(dependsOn: spotlessApply){
-    
+    format 'dotfiles', {
+        target '.gitignore', '.gitattributes', '.editorconfig'
+        indentWithSpaces(2)
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
-
-
-spotless {
-	groovyGradle {
-		target '*.gradle', 'gradle/*.gradle'
-	}
+apply from: "${rootProject.projectDir}/gradle/build-versioning.gradle"
+apply from: "${rootProject.projectDir}/gradle/build-java.gradle"
+apply from: "${rootProject.projectDir}/gradle/build-spring.gradle"
+apply from: "${rootProject.projectDir}/gradle/build-maven.gradle"
+apply from: "${rootProject.projectDir}/gradle/build-eclipse.gradle"
+apply from: "${rootProject.projectDir}/gradle/build-report.gradle"
+apply from: "${rootProject.projectDir}/gradle/build-integrationtest.gradle"
 	format 'dotfiles', {
 		target '.gitignore', '.gitattributes', '.editorconfig'
 		indentWithSpaces(2)
