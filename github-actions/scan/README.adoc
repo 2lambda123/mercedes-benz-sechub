@@ -37,7 +37,7 @@ To be able to use this action you need a SecHub project. Check the https://merce
 
     # OPTIONAL: A list of folders to be excluded. Multiple folders can be separated by ,
     # DEFAULT: empty (see SecHub documentation for default excludes)
-    exclude-folders: 'bin,build,dist'
+    exclude-folders: 'bin,build,dist,logs'
 
     # REQUIRED: The formats in which the report should be downloaded. Multiple values can be separatd by ,
     # DEFAULT: json,html
