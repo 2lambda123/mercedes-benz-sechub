@@ -58,11 +58,17 @@ To be able to use this action you need a SecHub project. Check the https://merce
 
 === Outputs
 
-The following table lists the output variables available after this SecHub GitHub Action has completed:
+The following table describes the output variables available after the SecHub GitHub Action has completed:
 
 [cols="20%,40%,40%"]
 |===
 | Output Name          | Description                                           | Expected Values
+| scan-trafficlight    | The color of the traffic light reported by SecHub if the scan ran successfully, otherwise `FAILED`. | One of `GREEN`, `YELLOW`, `RED`, or `FAILED`.
+| scan-findings-count  | The total number of findings reported by SecHub. Returns 0 if the scan didn't complete.         | A number.
+| scan-findings-high   | The number of high-level findings reported by SecHub.         | A number.
+| scan-findings-medium | The number of medium-level findings reported by SecHub.         | A number.
+| scan-findings-low    | The number of low-level findings reported by SecHub.         | A number.
+| scan-readable-summary| A human-readable summary of the scan outcome, including the traffic light color, findings count, and their distribution.         | A string.
 
 | scan-trafficlight    | The color of the traffic light reported by SecHub if the scan ran successfully, otherwise `FAILURE`. | One of `GREEN`, `YELLOW`, `RED`, or `FAILURE`.
 | scan-findings-count  | The total number of findings reported by SecHub. Returns 0 if the scan didn't complete.         | 0
