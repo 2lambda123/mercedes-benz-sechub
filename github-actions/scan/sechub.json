@@ -1,0 +1,82 @@
+// github-actions/scan/sechub.json
+
+function createSecHubConfigFile(
+  url: string,
+  apiToken: string,
+  user: string,
+  projectName: string,
+  version: string,
+  includeFolders: string[],
+  excludeFolders: string[],
+  reportFormats: string[],
+  debug: boolean,
+  failJobWithFindings: boolean
+): string {
+  const config = {
+    url,
+    apiToken,
+    user,
+    projectName,
+    version,
+    includeFolders,
+    excludeFolders,
+    reportFormats,
+    debug,
+    failJobWithFindings,
+  };
+
+  return JSON.stringify(config, null, 2);
+}
+
+export default createSecHubConfigFile;
+```
+
+Unit tests:
+
+```typescript
+import createSecHubConfigFile from './sechub.json';
+
+describe('createSecHubConfigFile', () => {
+  it('should generate the sechub.json content with provided input parameters', () => {
+    const url = 'https://sechub.example.com';
+    const apiToken = 'sechub-api-token';
+    const user = 'sechub-user';
+    const projectName = 'sechub-project';
+    const version = '1.2.0';
+    const includeFolders = ['src', 'lib'];
+    const excludeFolders = ['bin', 'build', 'dist'];
+    const reportFormats = ['json', 'html'];
+    const debug = false;
+    const failJobWithFindings = true;
+
+    const expectedConfig = {
+      url,
+      apiToken,
+      user,
+      projectName,
+      version,
+      includeFolders,
+      excludeFolders,
+      reportFormats,
+      debug,
+      failJobWithFindings,
+    };
+
+    const configContent = createSecHubConfigFile(
+      url,
+      apiToken,
+      user,
+      projectName,
+      version,
+      includeFolders,
+      excludeFolders,
+      reportFormats,
+      debug,
+      failJobWithFindings
+    );
+
+    expect(JSON.parse(configContent)).toEqual(expectedConfig);
+  });
+
+  // Add more test cases to cover all possible scenarios
+});

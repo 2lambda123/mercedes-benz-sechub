@@ -14,7 +14,11 @@ To be able to use this action you need a SecHub project. Check the https://merce
 - uses: mercedes-benz/sechub/github-actions/scan@72a27282da80952e6fadcef452c6a9085971c688
   with:
     # OPTIONAL: Path to sechub.json for manual configuration. If no value is set the input parameters will be used to create it for the scan.'
-    config-path: 'sechub.json'
+    config-path: 'github-actions/scan/sechub.json'
+    
+    # REQUIRED: The formats in which the report should be downloaded. Multiple values can be separatd by ,
+    # DEFAULT: 'json,html'
+    report-formats: 'json,html'
 
     # OPTIONAL: SecHub server url
     url: ${{ secrets.SECHUB_SERVER }}
@@ -29,13 +33,13 @@ To be able to use this action you need a SecHub project. Check the https://merce
     project-name: ${{ secrets.SECHUB_PROJECT }}
 
     # OPTIONAL: Which version of the SecHub cli to use
-    # DEFAULT: 1.2.0
+    # DEFAULT: '1.2.0'
     version: '1.2.0'
 
-    # OPTIONAL: A list of folders to be included. Multiple folders can be separated by ,
+    # OPTIONAL: A list of folders to be included. DEFAULT: 'src,lib'. Multiple folders can be separated by ,
     include-folders: 'src,lib'
 
-    # OPTIONAL: A list of folders to be excluded. Multiple folders can be separated by ,
+    # OPTIONAL: A list of folders to be excluded. DEFAULT: 'bin,build,dist'. Multiple folders can be separated by ,
     # DEFAULT: empty (see SecHub documentation for default excludes)
     exclude-folders: 'bin,build,dist'
 
@@ -49,16 +53,22 @@ To be able to use this action you need a SecHub project. Check the https://merce
 
     # OPTIONAL: job (pipeline) will be marked as failed if sechub finds something
     # DEFAULT: true
-    fail-job-with-findings: true
+    fail-job-with-findings: false
 ----
 
 === Outputs
 
-The following table lists the output variables available after this SecHub GitHub Action has completed:
+The following table describes the output variables available after the SecHub GitHub Action has completed:
 
 [cols="20%,40%,40%"]
 |===
 | Output Name          | Description                                           | Expected Values
+| scan-trafficlight    | The color of the traffic light reported by SecHub if the scan ran successfully, otherwise `FAILED`. | One of `GREEN`, `YELLOW`, `RED`, or `FAILED`.
+| scan-findings-count  | The total number of findings reported by SecHub. Returns 0 if the scan didn't complete.         | A number.
+| scan-findings-high   | The number of high-level findings reported by SecHub.         | A number.
+| scan-findings-medium | The number of medium-level findings reported by SecHub.         | A number.
+| scan-findings-low    | The number of low-level findings reported by SecHub.         | A number.
+| scan-readable-summary| A human-readable summary of the scan outcome, including the traffic light color, findings count, and their distribution.         | A string.
 
 | scan-trafficlight    | The color of the traffic light reported by SecHub if the scan ran successfully, otherwise `FAILURE`. | One of `GREEN`, `YELLOW`, `RED`, or `FAILURE`.
 | scan-findings-count  | The total number of findings reported by SecHub. Returns 0 if the scan didn't complete.         | 0
@@ -78,7 +88,7 @@ To build the action locally you have to run this command:
 
 [source,npm]
 ----
-npm run build
+npm run build && ⏎    # This will run the `ncc` compiler and transpile the files from the src folder into the files from the dist folder. The dist files will be executed by the GitHub Action.
 ----
 
 This will run the `ncc` compiler and transpile the files from the src folder into the files from the dist folder.
@@ -92,5 +102,6 @@ To run the tests you have to run this command:
 
 [source,npm]
 ----
-npm run test
+npm run test && 
+ This will run the `ncc` compiler and transpile the files from the src folder into the files from the dist folder. The dist files will be executed by the GitHub Action.
 ----
