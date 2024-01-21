@@ -5,7 +5,7 @@
  *  ------------------------------------------------------------------------
  */
 
-if (! apiPublishNecessary ){
+if (! apiPublishNecessary || !buildDoneByGitHubActions){
     println("Api publish not necessary");
     return;
 }
@@ -17,6 +17,11 @@ if (! buildDoneByGitHubActions ){
 }
 
 apply plugin: 'maven-publish'
+
+if (!buildDoneByGitHubActions) {
+    println('Publishing will be ignored - only provided by GitHub Actions')
+    return
+}
 
 publishing {
 
